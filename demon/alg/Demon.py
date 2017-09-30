@@ -117,7 +117,7 @@ class Demon(object):
 
             node_to_coms = {}
 
-            nodes = nx.nodes(ego_minus_ego)
+            nodes = list(nx.nodes(ego_minus_ego))
             random.shuffle(nodes)
 
             count = -len(nodes)
@@ -125,7 +125,7 @@ class Demon(object):
             for n in nodes:
                 label_freq = {}
 
-                n_neighbors = nx.neighbors(ego_minus_ego, n)
+                n_neighbors = list(nx.neighbors(ego_minus_ego, n))
 
                 if len(n_neighbors) < 1:
                     continue
@@ -175,7 +175,7 @@ class Demon(object):
         # build the communities reintroducing the ego
         community_to_nodes = {}
         for n in nx.nodes(ego_minus_ego):
-            if len(nx.neighbors(ego_minus_ego, n)) == 0:
+            if len(list(nx.neighbors(ego_minus_ego, n))) == 0:
                 ego_minus_ego.node[n]['communities'] = [n]
 
             c_n = ego_minus_ego.node[n]['communities']
