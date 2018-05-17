@@ -34,18 +34,15 @@ Alternatively use pip:
 sudo pip install demon
 ```
 
-## Implementation details
-
-Required input format: tab separated edgelist (nodes represented with integer ids).
-
-```
-node_id0    node_id1
-```
-
-# Execution
 Demon is written in python and requires the following package to run:
 - networkx
 - tqdm
+
+## Implementation details
+
+
+
+# Execution
 
 The algorithm can be used as standalone program as well as integrated in python scripts.
 
@@ -57,14 +54,48 @@ python demon filename epsilon -c min_com_size
 ```
 
 where:
-* filename: edgelist filename
-* epsilon: merging threshold in [0,1]
-* min_community_size: minimum size for communities (default 3 - optional)
-* file_output: True if the results should be written in a file, False otherwise
+* *filename*: edgelist filename
+* *epsilon*: merging threshold in [0,1]
+* *min_community_size*: minimum size for communities (default 3 - optional)
+
+Demon results will be saved on a text file.
+
+### Input file specs 
+Edgelist format: tab separated edgelist (nodes represented with integer ids).
+
+Row example:
+```
+node_id0    node_id1
+```
 
 ## As python library
+
+Demon can be executed specifying as input: 
+
+1. an edgelist file
+
 ```python
 import demon as d
-dm = d.Demon("filename.tsc", epsilon=0.25, min_community_size=3, file_output=True)
+dm = d.Demon(network_filename="filename.tsc", epsilon=0.25, min_community_size=3, file_output="communities.txt")
 dm.execute()
+
+```
+
+2. a *networkx* Graph object
+
+```python
+import networkx as nx
+import demon as d
+
+g = nx.karate_club_graph()
+dm = d.Demon(graph=g, epsilon=0.25, min_community_size=3)
+coms = dm.execute()
+
+```
+
+The parameter *file_output*, if specified, allows to write on file the algorithm results.
+Conversely, the communities will be returned to the main program as a list of node ids tuple, e.g.,
+
+```python
+[(0,1,2),(3,4),(5,6,7)]
 ```

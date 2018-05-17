@@ -39,7 +39,7 @@ class Demon(object):
     KDD 2012:615-623
     """
 
-    def __init__(self, network_filename, epsilon=0.25, min_community_size=3, file_output=False):
+    def __init__(self, graph=None, network_filename=None, epsilon=0.25, min_community_size=3, file_output=None):
         """
         Constructor
 
@@ -48,9 +48,14 @@ class Demon(object):
         :@param min_community_size:min nodes needed to form a community
         :@param file_output: True/False
         """
-
-        self.g = nx.Graph()
-        self.__read_graph(network_filename)
+        if graph is None:
+            self.g = nx.Graph()
+            if network_filename is not None:
+                self.__read_graph(network_filename)
+            else:
+                raise ImportError
+        else:
+            self.g = graph
         self.epsilon = epsilon
         self.min_community_size = min_community_size
         self.file_output = file_output
@@ -89,16 +94,16 @@ class Demon(object):
                     actual_community = community_to_nodes[c]
                     all_communities = self.__merge_communities(all_communities, actual_community)
 
-        if self.file_output is not False:
-            out_file_com = open("%s/demon_%s_communities.txt" % (self.base, self.epsilon), "w")
+        if self.file_output is None:
+            return list(all_communities.keys())
+        else:
+            out_file_com = open("%s" % self.file_output, "w")
             idc = 0
             for c in all_communities.keys():
                 out_file_com.write("%d\t%s\n" % (idc, str(sorted(c))))
                 idc += 1
             out_file_com.flush()
             out_file_com.close()
-        else:
-            return all_communities
 
     @staticmethod
     def __overlapping_label_propagation(ego_minus_ego, ego, max_iteration=10):
@@ -265,7 +270,7 @@ def main():
     parser.add_argument('-c', '--min_com_size', type=int, help='minimum community size', default=3)
 
     args = parser.parse_args()
-    dm = Demon(args.network_file, epsilon=args.epsilon,
-               min_community_size=args.min_com_size, file_output=True)
+    dm = Demon(g=None, network_filename=args.network_file, epsilon=args.epsilon,
+               min_community_size=args.min_com_size, file_output="demon_communities.tsv")
     dm.execute()
 
